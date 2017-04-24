@@ -133,14 +133,14 @@ class ParserState:
         n1 = self.stack.pop()
         n2 = self.stack.pop()
         if(action == Actions.REDUCE_L):
-            combinedEmbedding = self.combiner(n1.embeddding,n2.embeddding)
+            combinedEmbedding = self.combiner(n1.embedding,n2.embedding)
             self.stack.append(StackEntry(n1.headword,n1.headword_pos,combinedEmbedding))
             retVal = DepGraphEdge((n1.headword, n1.headword_pos), 
                                   (n2.headword, n2.headword_pos))
             print("Reduce Left: {0},{1} <- {2},{3}".format(n2.headword, n2.headword_pos,
                                                            n1.headword, n1.headword_pos))
         elif(action == Actions.REDUCE_R):
-            combinedEmbedding = self.combiner(n2.embeddding,n1.embeddding)
+            combinedEmbedding = self.combiner(n2.embedding,n1.embedding)
             retVal = DepGraphEdge((n2.headword, n2.headword_pos), 
                                   (n1.headword, n1.headword_pos))
             print("Reduce Left: {0},{1} -> {2},{3}".format(n2.headword, n2.headword_pos,
