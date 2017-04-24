@@ -48,6 +48,7 @@ class VanillaWordEmbeddingLookup(nn.Module):
         self.output_dim = embedding_dim
 
         # STUDENT
+        self.word_embeddings = torch.nn.Embedding(len(word_to_ix),embedding_dim)
         # name your embedding member "word_embeddings"
         # END STUDENT
 
@@ -63,6 +64,7 @@ class VanillaWordEmbeddingLookup(nn.Module):
         inp = utils.sequence_to_variable(sentence, self.word_to_ix, self.use_cuda)
         embeds = [] # store each Variable in here
         # STUDENT
+        embeds = self.word_embeddings(inp)
         # END STUDENT
         return embeds
 
