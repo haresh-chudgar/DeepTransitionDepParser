@@ -127,8 +127,32 @@ class ParserState:
         """
         assert len(self.stack) >= 2, "ERROR: Cannot reduce with stack length less than 2"
         
+        retVal = None
         # STUDENT
         # hint: use list.pop()
+        n1 = self.stack.pop()
+        n2 = self.stack.pop()
+        if(action == Actions.REDUCE_L):
+            combinedEmbedding = self.combiner.forward(n1.embeddding,n2.embeddding)
+            self.stack.append(StackEntry(n1.headword,n1.headword_pos,combinedEmbedding))
+            retVal = DepGraphEdge((n1.headword, n1.headword_pos), 
+                                  (n2.headword, n2.headword_pos))
+            print("Reduce Left: {0},{1} <- {2},{3}".format(n2.headword, n2.headword_pos,
+                                                           n1.headword, n1.headword_pos))
+        elif(action == Actions.REDUCE_R):
+            combinedEmbedding = self.combiner.forward(n2.embeddding,n1.embeddding)
+            retVal = DepGraphEdge((n2.headword, n2.headword_pos), 
+                                  (n1.headword, n1.headword_pos))
+            print("Reduce Left: {0},{1} -> {2},{3}".format(n2.headword, n2.headword_pos,
+                                                           n1.headword, n1.headword_pos))
+            self.stack.append(StackEntry(n2.headword,n2.headword_pos,combinedEmbedding))
+        else:
+            print("parsing _reduce: Error! Not a reduce action!")
+            #Undoing pop...
+            self.stack.append(n2)
+            self.stack.append(n1)
+        
+        return retVal
         # END STUDENT
 
     def __str__(self):
