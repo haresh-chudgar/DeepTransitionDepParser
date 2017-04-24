@@ -24,5 +24,9 @@ class SimpleFeatureExtractor:
             features
         """
         # STUDENT
-        pass
+        retVal = []
+        retVal.append(parser_state.stack[-2].embedding)
+        retVal.append(parser_state.stack[-1].embedding)
+        retVal.append(parser_state.input_buffer[parser_state.curr_input_buff_idx].embedding)
+        return retVal
         # END STUDENT
