@@ -64,7 +64,8 @@ class VanillaWordEmbeddingLookup(nn.Module):
         inp = utils.sequence_to_variable(sentence, self.word_to_ix, self.use_cuda)
         embeds = [] # store each Variable in here
         # STUDENT
-        embeds = self.word_embeddings(inp)
+        for idx in inp:
+            embeds.append(self.word_embeddings(idx))
         # END STUDENT
         return embeds
 
