@@ -195,6 +195,9 @@ class MLPCombinerNetwork(nn.Module):
         # The output of the first linear layer should be embedding_dim
         # (the rest of the input/output dims are thus totally determined)
         # END STUDENT
+        self.fc1 = nn.Linear(2*embedding_dim,embedding_dim)
+        self.fc2 = nn.Linear(embedding_dim,embedding_dim)
+        self.tanh = nn.Tanh()
 
     def forward(self, head_embed, modifier_embed):
         """
@@ -206,7 +209,9 @@ class MLPCombinerNetwork(nn.Module):
         :return The embedding of the combination as a row vector
         """
         # STUDENT
-        pass
+        inp = utils.concat_and_flatten([head_embed,modifier_embed])
+        fc1Out = self.tanh(self.fc1(inp))
+        return self.fc2(fc1Out)
         # END STUDENT
 
 
@@ -310,6 +315,11 @@ class ActionChooserNetwork(nn.Module):
         # 1. The first linear layer (the one that is called first in the network)
         # 2. The second linear layer
         # END STUDENT
+        self.fc1 = nn.Linear(input_dim,input_dim)
+        self.fc2 = nn.Linear(input_dim,Actions.NUM_ACTIONS)
+        self.relu = nn.ReLU()
+        self.softmax = nn.LogSoftmax()
+        
 
     def forward(self, inputs):
         """
@@ -321,5 +331,15 @@ class ActionChooserNetwork(nn.Module):
             (it is a row vector, with an entry for each action)
         """
         # STUDENT
-        pass
+        inputs = utils.concat_and_flatten(inputs)
+        fc1Out = self.relu(self.fc1(inputs))
+        fc2Out = self.fc2(fc1Out)
+        return self.softmax(fc2Out)
         # END STUDENT
+
+
+
+
+
+
+
