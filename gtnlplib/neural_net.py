@@ -310,6 +310,11 @@ class ActionChooserNetwork(nn.Module):
         # 1. The first linear layer (the one that is called first in the network)
         # 2. The second linear layer
         # END STUDENT
+        self.fc1 = nn.Linear(input_dim,input_dim)
+        self.fc2 = nn.Linear(input_dim,Actions.NUM_ACTIONS)
+        self.relu = nn.ReLU()
+        self.softmax = nn.LogSoftmax()
+        
 
     def forward(self, inputs):
         """
@@ -321,5 +326,15 @@ class ActionChooserNetwork(nn.Module):
             (it is a row vector, with an entry for each action)
         """
         # STUDENT
-        pass
+        inputs = utils.concat_and_flatten(inputs)
+        fc1Out = self.relu(self.fc1(inputs))
+        fc2Out = self.fc2(fc1Out)
+        return self.softmax(fc2Out)
         # END STUDENT
+
+
+
+
+
+
+
