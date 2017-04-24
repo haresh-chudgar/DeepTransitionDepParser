@@ -71,7 +71,7 @@ class ParserState:
         <END-OF-INPUT> should not be shifted onto the stack ever.
         """
         # STUDENT
-        pass
+        return self.input_buffer[self.curr_input_buff_idx].headword == consts.END_OF_INPUT_TOK
         # END STUDENT
 
     def stack_len(self):
