@@ -50,6 +50,15 @@ class ParserState:
         self.stack = []
         self.null_stack_tok_embed = null_stack_tok_embed
 
+    def takeAction(self,action):
+        if(action == Actions.SHIFT):
+            self.shift()
+            return None
+        elif(action == Actions.REDUCE_L):
+            return self.reduce_left()
+        else:
+            return self.reduce_right()
+    
     def shift(self):
         next_item = self.input_buffer[self.curr_input_buff_idx]
         self.stack.append(next_item)
@@ -231,30 +240,43 @@ class TransitionParser(nn.Module):
             have_gold_actions = True
         else:
             have_gold_actions = False
-            parser_state.shift()
-            parser_state.shift()
-
+        
         # STUDENT
         while(parser_state.done_parsing() == False):
-            features = self.feature_extractor.get_features(parser_state)
-            log_probs = self.action_chooser(features)
-            actionProbs = log_probs.numpy()
-            actionToTake = actionProbs.argmax(axis=1)
-            
-            outputs.append(actionProbs[actionToTake])
-            actions_done.append(actionToTake)            
-            if(actionToTake == Actions.SHIFT):
-                parser_state.shift()
-            elif(actionToTake == Actions.REDUCE_L):
-                dep_graph.add(parser_state.reduce_left())
+            if(parser_state.stack_len() > 2):
+                features = self.feature_extractor.get_features(parser_state)
+                log_probs = self.action_chooser(features)
             else:
-                dep_graph.add(parser_state.reduce_right())
+                log_probs = None
+            
+            if(have_gold_actions == True):
+                a = action_queue.popleft()
+                d = parser_state.takeAction(a)
+                if(d is not None):
+                    dep_graph.add(d)
+                if(log_probs != None):
+                    outputs.append(log_probs[a])
+                else:
+                    outputs.append(0)
+                actions_done.append(a)
+            else:
+                if(log_probs == None):
+                    parser_state.shift()
+                    outputs.append(0)
+                    actions_done.append(Actions.SHIFT)
+                else:
+                    actionToTake = utils.argmax(log_probs)
+                    outputs.append(log_probs[actionToTake])
+                    actions_done.append(actionToTake)
+                    parser_state.takeAction(actionToTake)
+                    if(d is not None):
+                        dep_graph.add(d)
+
         # END STUDENT
 
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
-        return outputs, dep_graph, actions_done
-
-
+        return outputs, dep_graph, actions_done    
+    
     def refresh(self):
         if isinstance(self.combiner, neural_net.LSTMCombinerNetwork):
             self.combiner.clear_hidden_state()
