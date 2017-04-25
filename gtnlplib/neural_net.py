@@ -132,6 +132,7 @@ class BiLSTMWordEmbeddingLookup(nn.Module):
                 the embedding lookup components"
         inp = utils.sequence_to_variable(sentence, self.word_to_ix, self.use_cuda)
         # STUDENT
+        inp = inp.expand(1,inp.size()[0],inp.size()[1])
         wordEmb_sequence = self.word_embeddings(inp)
         output,hn = self.lstm(wordEmb_sequence,self.hidden)
         self.hidden = hn

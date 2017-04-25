@@ -278,7 +278,7 @@ class TransitionParser(nn.Module):
 
         if(parser_state.stack_len() == 2):
             parser_state.reduce_right()
-        print(parser_state.stack_len())
+        #print(parser_state.stack_len())
         # END STUDENT
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
         return outputs, dep_graph, actions_done    
