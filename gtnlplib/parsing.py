@@ -256,13 +256,10 @@ class TransitionParser(nn.Module):
                     dep_graph.add(d)
                 if(logProbsValid == True):
                     outputs.append(log_probs[0,a])
-                else:
-                    outputs.append(0)
                 actions_done.append(a)
             else:
                 if(logProbsValid == True):
                     parser_state.shift()
-                    outputs.append(0)
                     actions_done.append(Actions.action_to_ix(Actions.SHIFT))
                 else:
                     actionToTake = utils.argmax(log_probs)
@@ -272,8 +269,8 @@ class TransitionParser(nn.Module):
                     if(d is not None):
                         dep_graph.add(d)
 
+        parser_state.reduce_right()
         # END STUDENT
-
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
         return outputs, dep_graph, actions_done    
     
