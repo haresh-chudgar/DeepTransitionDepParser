@@ -259,13 +259,15 @@ class TransitionParser(nn.Module):
                 if(logProbsValid == True):
                     outputs.append(log_probs[0,a])
                 else:
-                    outputs.append(torch.FloatTensor(np.zeros((1))))
+                    x = np.zeros((1))
+                    outputs.append(torch.autograd.Variable(torch.FloatTensor(x)))
                 actions_done.append(a)
             else:
                 if(logProbsValid == False):
                     parser_state.shift()
                     actions_done.append(Actions.action_to_ix(Actions.SHIFT))
-                    outputs.append(torch.FloatTensor(np.zeros((1))))
+                    x = np.zeros((1))
+                    outputs.append(torch.autograd.Variable(torch.FloatTensor(x)))
                 else:
                     actionToTake = utils.argmax(log_probs)
                     outputs.append(log_probs[0,actionToTake])
