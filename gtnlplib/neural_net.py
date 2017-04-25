@@ -253,6 +253,8 @@ class LSTMCombinerNetwork(nn.Module):
         self.use_cuda = False
 
         # STUDENT
+        self.lstm = torch.nn.LSTM(input_size=embedding_dim*2,hidden_size=embedding_dim,
+                                  num_layers=num_layers,dropout=dropout,batch_first=True)
         # END STUDENT
 
         self.hidden = self.init_hidden()
@@ -290,7 +292,11 @@ class LSTMCombinerNetwork(nn.Module):
         :param modifier_embed Embedding of the modifier
         """
         # STUDENT
-        pass
+        inp = utils.concat_and_flatten([head_embed,modifier_embed])
+        inp = inp.expand(1,1,inp.size()[0])
+        output,hn = self.lstm(inp,self.hidden)
+        self.hidden = hn
+        return output[0,0].expand(1,output.size()[2])
         # END STUDENT
 
 
