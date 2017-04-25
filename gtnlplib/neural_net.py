@@ -293,7 +293,7 @@ class LSTMCombinerNetwork(nn.Module):
         """
         # STUDENT
         inp = utils.concat_and_flatten([head_embed,modifier_embed])
-        inp = inp.expand(1,1,inp.size()[0])
+        inp = inp.expand(1,1,inp.size()[1])
         output,hn = self.lstm(inp,self.hidden)
         self.hidden = hn
         return output[0,0].expand(1,output.size()[2])
