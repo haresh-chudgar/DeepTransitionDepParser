@@ -259,15 +259,16 @@ class TransitionParser(nn.Module):
                 else:
                     outputs.append(0)
                 actions_done.append(a)
+                print(a)
             else:
                 if(log_probs == None):
                     parser_state.shift()
                     outputs.append(0)
-                    actions_done.append(Actions.SHIFT)
+                    actions_done.append(Actions.action_to_ix(Actions.SHIFT))
                 else:
                     actionToTake = utils.argmax(log_probs)
                     outputs.append(log_probs[actionToTake])
-                    actions_done.append(actionToTake)
+                    actions_done.append(Actions.action_to_ix(actionToTake))
                     parser_state.takeAction(actionToTake)
                     if(d is not None):
                         dep_graph.add(d)
@@ -275,6 +276,9 @@ class TransitionParser(nn.Module):
         # END STUDENT
 
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
+        print(dep_graph)
+        print(outputs)
+        print(actions_done)
         return outputs, dep_graph, actions_done    
     
     def refresh(self):
