@@ -236,11 +236,14 @@ class TransitionParser(nn.Module):
         while(parser_state.done_parsing() == False):
             features = self.feature_extractor.get_features(parser_state)
             log_probs = self.action_chooser(features)
-            actionToTake = log_probs.numpy().argmax(axis=1)
-            print(len(actionToTake))
-            if(actionToTake == 0):
+            actionProbs = log_probs.numpy()
+            actionToTake = actionProbs.argmax(axis=1)
+            
+            outputs.append(actionProbs[actionToTake])
+            actions_done.append(actionToTake)            
+            if(actionToTake == Actions.SHIFT):
                 parser_state.shift()
-            elif(actionToTake == 1):
+            elif(actionToTake == Actions.REDUCE_L):
                 dep_graph.add(parser_state.reduce_left())
             else:
                 dep_graph.add(parser_state.reduce_right())
@@ -327,8 +330,8 @@ def train(data, model, optimizer, verbose=True):
     acc = float(correct_actions) / total_actions
     loss = float(tot_loss) / instance_count
     if verbose:
-        print "Number of instances: {}    Number of network actions: {}".format(instance_count, total_actions)
-        print "Acc: {}  Loss: {}".format(float(correct_actions) / total_actions, tot_loss / instance_count)
+        print("Number of instances: {}    Number of network actions: {}".format(instance_count, total_actions))
+        print("Acc: {}  Loss: {}".format(float(correct_actions) / total_actions, tot_loss / instance_count))
 
 
 def evaluate(data, model, verbose=False):
@@ -362,6 +365,6 @@ def evaluate(data, model, verbose=False):
     acc = float(correct_actions) / total_actions
     loss = float(tot_loss) / instance_count
     if verbose:
-        print "Number of instances: {}    Number of network actions: {}".format(instance_count, total_actions)
-        print "Acc: {}  Loss: {}".format(float(correct_actions) / total_actions, tot_loss / instance_count)
+        print("Number of instances: {}    Number of network actions: {}".format(instance_count, total_actions))
+        print("Acc: {}  Loss: {}".format(float(correct_actions) / total_actions, tot_loss / instance_count))
     return acc, loss

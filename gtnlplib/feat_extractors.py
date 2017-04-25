@@ -25,8 +25,16 @@ class SimpleFeatureExtractor:
         """
         # STUDENT
         retVal = []
-        retVal.append(parser_state.stack[-2].embedding)
-        retVal.append(parser_state.stack[-1].embedding)
+        if(parser_state.stack_len() >= 2):
+            retVal.append(parser_state.stack[-2].embedding)
+        else:
+            retVal.append(0.0)
+            
+        if(parser_state.stack_len() >= 1):
+            retVal.append(parser_state.stack[-1].embedding)
+        else:
+            retVal.append(0.0)
+        
         retVal.append(parser_state.input_buffer[parser_state.curr_input_buff_idx].embedding)
         return retVal
         # END STUDENT
