@@ -28,18 +28,8 @@ class SimpleFeatureExtractor:
         """
         # STUDENT
         retVal = []
-        if(parser_state.stack_len() >= 2):
-            retVal.append(parser_state.stack[-2].embedding)
-        else:
-            x = np.array([0],dtype=np.float32)
-            retVal.append(torch.Tensor(x))
-            
-        if(parser_state.stack_len() >= 1):
-            retVal.append(parser_state.stack[-1].embedding)
-        else:
-            x = np.array([0],dtype=np.float32)
-            retVal.append(torch.Tensor(x))
-            
+        retVal.append(parser_state.stack[-2].embedding)            
+        retVal.append(parser_state.stack[-1].embedding)            
         retVal.append(parser_state.input_buffer[parser_state.curr_input_buff_idx].embedding)
         return retVal
         # END STUDENT

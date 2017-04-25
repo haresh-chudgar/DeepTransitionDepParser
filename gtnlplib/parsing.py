@@ -231,6 +231,8 @@ class TransitionParser(nn.Module):
             have_gold_actions = True
         else:
             have_gold_actions = False
+            parser_state.shift()
+            parser_state.shift()
 
         # STUDENT
         while(parser_state.done_parsing() == False):
