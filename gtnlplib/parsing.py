@@ -265,14 +265,14 @@ class TransitionParser(nn.Module):
             else:
                 if(logProbsValid == False):
                     parser_state.shift()
-                    actions_done.append(Actions.action_to_ix(Actions.SHIFT))
+                    actions_done.append(Actions.SHIFT)
                     x = np.zeros((3,1))
                     outputs.append(torch.autograd.Variable(torch.FloatTensor(x)))
                 else:
                     actionToTake = utils.argmax(log_probs)
                     outputs.append(log_probs)
-                    actions_done.append(Actions.action_to_ix(actionToTake))
-                    parser_state.takeAction(actionToTake)
+                    actions_done.append(actionToTake)
+                    d = parser_state.takeAction(actionToTake)
                     if(d is not None):
                         dep_graph.add(d)
 
