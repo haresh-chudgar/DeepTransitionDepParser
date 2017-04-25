@@ -255,11 +255,10 @@ class TransitionParser(nn.Module):
                 if(d is not None):
                     dep_graph.add(d)
                 if(logProbsValid == True):
-                    outputs.append(log_probs[a])
+                    outputs.append(log_probs[0,a])
                 else:
                     outputs.append(0)
                 actions_done.append(a)
-                print(a)
             else:
                 if(logProbsValid == True):
                     parser_state.shift()
@@ -267,7 +266,7 @@ class TransitionParser(nn.Module):
                     actions_done.append(Actions.action_to_ix(Actions.SHIFT))
                 else:
                     actionToTake = utils.argmax(log_probs)
-                    outputs.append(log_probs[actionToTake])
+                    outputs.append(log_probs[0,actionToTake])
                     actions_done.append(Actions.action_to_ix(actionToTake))
                     parser_state.takeAction(actionToTake)
                     if(d is not None):
