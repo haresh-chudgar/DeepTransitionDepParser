@@ -243,7 +243,7 @@ class TransitionParser(nn.Module):
         
         # STUDENT
         while(parser_state.done_parsing() == False):
-            if(parser_state.stack_len() > 2):
+            if(parser_state.stack_len() >= 2):
                 features = self.feature_extractor.get_features(parser_state)
                 log_probs = self.action_chooser(features)
             else:
@@ -276,9 +276,6 @@ class TransitionParser(nn.Module):
         # END STUDENT
 
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
-        print(dep_graph)
-        print(outputs)
-        print(actions_done)
         return outputs, dep_graph, actions_done    
     
     def refresh(self):
