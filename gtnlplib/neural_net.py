@@ -103,6 +103,10 @@ class BiLSTMWordEmbeddingLookup(nn.Module):
         # Note we want the output dim to be hidden_dim, but since our LSTM
         # is bidirectional, we need to make the output of each direction hidden_dim/2
         # name your embedding member "word_embeddings"
+        self.word_embeddings = torch.nn.Embedding(len(word_to_ix),word_embedding_dim)
+        self.lstm = torch.nn.LSTM(input_size=word_embedding_dim,hidden_size=hidden_dim/2,
+                                  num_layers=num_layers,dropout=dropout,bidirectional=True
+                                  ,batch_first=True)
         # END STUDENT
 
         self.hidden = self.init_hidden()
@@ -127,8 +131,14 @@ class BiLSTMWordEmbeddingLookup(nn.Module):
         assert self.word_to_ix is not None, "ERROR: Make sure to set word_to_ix on \
                 the embedding lookup components"
         inp = utils.sequence_to_variable(sentence, self.word_to_ix, self.use_cuda)
-
         # STUDENT
+        wordEmb_sequence = self.word_embeddings(inp)
+        output,hn = self.lstm(wordEmb_sequence,self.hidden)
+        self.hidden = hn
+        embeddings = []
+        for idx in inp:
+            embeddings.append(output[0,idx])
+        return embeddings
         # END STUDENT
 
     def init_hidden(self):
