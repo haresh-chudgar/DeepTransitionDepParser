@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 import torch.autograd as ag
 
+import numpy as np
+
 from gtnlplib.constants import Actions, NULL_STACK_TOK, END_OF_INPUT_TOK, HAVE_CUDA, ROOT_TOK
 import gtnlplib.utils as utils
 import gtnlplib.neural_net as neural_net
@@ -256,11 +258,14 @@ class TransitionParser(nn.Module):
                     dep_graph.add(d)
                 if(logProbsValid == True):
                     outputs.append(log_probs[0,a])
+                else:
+                    outputs.append(torch.FloatTensor(np.zeros((1))))
                 actions_done.append(a)
             else:
-                if(logProbsValid == True):
+                if(logProbsValid == False):
                     parser_state.shift()
                     actions_done.append(Actions.action_to_ix(Actions.SHIFT))
+                    outputs.append(torch.FloatTensor(np.zeros((1))))
                 else:
                     actionToTake = utils.argmax(log_probs)
                     outputs.append(log_probs[0,actionToTake])
