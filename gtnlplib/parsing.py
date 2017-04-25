@@ -243,25 +243,25 @@ class TransitionParser(nn.Module):
         
         # STUDENT
         while(parser_state.done_parsing() == False):
+            logProbsValid = False
             if(parser_state.stack_len() >= 2):
                 features = self.feature_extractor.get_features(parser_state)
                 log_probs = self.action_chooser(features)
-            else:
-                log_probs = None
+                logProbsValid = True
             
             if(have_gold_actions == True):
                 a = action_queue.popleft()
                 d = parser_state.takeAction(a)
                 if(d is not None):
                     dep_graph.add(d)
-                if(log_probs != None):
+                if(logProbsValid == True):
                     outputs.append(log_probs[a])
                 else:
                     outputs.append(0)
                 actions_done.append(a)
                 print(a)
             else:
-                if(log_probs == None):
+                if(logProbsValid == True):
                     parser_state.shift()
                     outputs.append(0)
                     actions_done.append(Actions.action_to_ix(Actions.SHIFT))
