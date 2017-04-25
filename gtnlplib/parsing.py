@@ -257,20 +257,20 @@ class TransitionParser(nn.Module):
                 if(d is not None):
                     dep_graph.add(d)
                 if(logProbsValid == True):
-                    outputs.append(log_probs[0,a])
+                    outputs.append(log_probs)
                 else:
-                    x = np.zeros((1))
+                    x = np.zeros((3,1))
                     outputs.append(torch.autograd.Variable(torch.FloatTensor(x)))
                 actions_done.append(a)
             else:
                 if(logProbsValid == False):
                     parser_state.shift()
                     actions_done.append(Actions.action_to_ix(Actions.SHIFT))
-                    x = np.zeros((1))
+                    x = np.zeros((3,1))
                     outputs.append(torch.autograd.Variable(torch.FloatTensor(x)))
                 else:
                     actionToTake = utils.argmax(log_probs)
-                    outputs.append(log_probs[0,actionToTake])
+                    outputs.append(log_probs)
                     actions_done.append(Actions.action_to_ix(actionToTake))
                     parser_state.takeAction(actionToTake)
                     if(d is not None):
