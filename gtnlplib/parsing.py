@@ -137,14 +137,14 @@ class ParserState:
             self.stack.append(StackEntry(n1.headword,n1.headword_pos,combinedEmbedding))
             retVal = DepGraphEdge((n1.headword, n1.headword_pos), 
                                   (n2.headword, n2.headword_pos))
-            print("Reduce Left: {0},{1} <- {2},{3}".format(n2.headword, n2.headword_pos,
-                                                           n1.headword, n1.headword_pos))
+            #print("Reduce Left: {0},{1} <- {2},{3}".format(n2.headword, n2.headword_pos,
+            #                                               n1.headword, n1.headword_pos))
         elif(action == Actions.REDUCE_R):
             combinedEmbedding = self.combiner(n2.embedding,n1.embedding)
             retVal = DepGraphEdge((n2.headword, n2.headword_pos), 
                                   (n1.headword, n1.headword_pos))
-            print("Reduce Left: {0},{1} -> {2},{3}".format(n2.headword, n2.headword_pos,
-                                                           n1.headword, n1.headword_pos))
+            #print("Reduce Left: {0},{1} -> {2},{3}".format(n2.headword, n2.headword_pos,
+            #                                               n1.headword, n1.headword_pos))
             self.stack.append(StackEntry(n2.headword,n2.headword_pos,combinedEmbedding))
         else:
             print("parsing _reduce: Error! Not a reduce action!")
@@ -233,6 +233,17 @@ class TransitionParser(nn.Module):
             have_gold_actions = False
 
         # STUDENT
+        while(parser_state.done_parsing() == False):
+            features = self.feature_extractor.get_features(parser_state)
+            log_probs = self.action_chooser(features)
+            actionToTake = log_probs.numpy().argmax(axis=1)
+            print(len(actionToTake))
+            if(actionToTake == 0):
+                parser_state.shift()
+            elif(actionToTake == 1):
+                dep_graph.add(parser_state.reduce_left())
+            else:
+                dep_graph.add(parser_state.reduce_right())
         # END STUDENT
 
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
