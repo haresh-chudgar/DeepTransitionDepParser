@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 
 class SimpleFeatureExtractor:
 
@@ -30,13 +31,15 @@ class SimpleFeatureExtractor:
         if(parser_state.stack_len() >= 2):
             retVal.append(parser_state.stack[-2].embedding)
         else:
-            retVal.append(torch.FloatTensor(0.0))
+            x = np.array([0],dtype=np.float32)
+            retVal.append(torch.Tensor(x))
             
         if(parser_state.stack_len() >= 1):
             retVal.append(parser_state.stack[-1].embedding)
         else:
-            retVal.append(torch.FloatTensor(0.0))
-        
+            x = np.array([0],dtype=np.float32)
+            retVal.append(torch.Tensor(x))
+            
         retVal.append(parser_state.input_buffer[parser_state.curr_input_buff_idx].embedding)
         return retVal
         # END STUDENT
