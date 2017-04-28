@@ -82,7 +82,8 @@ class ParserState:
         <END-OF-INPUT> should not be shifted onto the stack ever.
         """
         # STUDENT
-        return self.input_buffer[self.curr_input_buff_idx].headword == END_OF_INPUT_TOK
+        isDone = (len(self.stack) == 1 and self.input_buffer[self.curr_input_buff_idx].headword == END_OF_INPUT_TOK)
+        return isDone
         # END STUDENT
 
     def stack_len(self):
@@ -224,7 +225,9 @@ class TransitionParser(nn.Module):
         """
         self.refresh() # clear up hidden states from last run, if need be
 
-        padded_sent = sentence + [END_OF_INPUT_TOK]
+        padded_sent = sentence        
+        if not (padded_sent[-1] == END_OF_INPUT_TOK):
+            padded_sent = padded_sent + [END_OF_INPUT_TOK]
 
         # Initialize the parser state
         sentence_embs = self.word_embedding_component(padded_sent)
@@ -270,14 +273,14 @@ class TransitionParser(nn.Module):
                     outputs.append(torch.autograd.Variable(torch.FloatTensor(x)))
                 else:
                     actionToTake = utils.argmax(log_probs)
+                    if(actionToTake == Actions.SHIFT and parser_state.input_buffer_len() == 1):
+                        actionToTake = Actions.REDUCE_R
                     outputs.append(log_probs)
                     actions_done.append(actionToTake)
                     d = parser_state.takeAction(actionToTake)
                     if(d is not None):
                         dep_graph.add(d)
 
-        if(parser_state.stack_len() == 2):
-            parser_state.reduce_right()
         #print(parser_state.stack_len())
         # END STUDENT
         dep_graph.add(DepGraphEdge((ROOT_TOK, -1), (parser_state.stack[-1].headword, parser_state.stack[-1].headword_pos)))
